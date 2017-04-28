@@ -48,15 +48,24 @@ NS_ASSUME_NONNULL_BEGIN
     if (_component == component) {
         return;
     }
-    
-    [_component.view removeFromSuperview];
+
     _component = component;
-    
+
     if (component == nil) {
         return;
     }
-    
-    id<HUBComponent> const nonNilComponent = component;
+
+    if (self.contentView.subviews.count == 0) {
+        [self addComponentView];
+    } else {
+        // associate existing component view that's embedded in the contentView with the current component
+        self.component.view = self.contentView.subviews.firstObject;
+    }
+}
+
+- (void)addComponentView
+{
+    id<HUBComponent> const nonNilComponent = self.component;
 
     UIView * const componentView = HUBComponentLoadViewIfNeeded(nonNilComponent);
     componentView.autoresizingMask |= UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
